@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gravity</title>
+        <style>
+            * {
+                margin: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script>
+            const canvas = document.getElementById("canvas");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext("2d");
+            let ballsArray;
+            const fillStyleColors = ["#2C3E50", "#E74C3C", "#ECF0F1", "#3498DB", "#2980B9", "#808080"];
+
+            function Ball(x, y, radius, dy, fillColor) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.dy = dy;
+                this.fillColor = fillColor;
+
+                this.draw = function () {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                    ctx.fillStyle = this.fillColor;
+                    ctx.stroke();
+                    ctx.fill();
+                };
+
+                this.update = function () {
+                    if (this.y + this.radius + this.dy > canvas.height) {
+                        this.dy = -this.dy * 0.9;
+                    } else {
+                        this.dy += 1;
+                    }
+                    this.y += this.dy;
+                    this.draw();
+                };
+
+                this.soloAnimate = function () {
+                    this.x += 10;
+                };
+            }
+
+            function init() {
+                ballsArray = [];
+                for (var i = 0; i < 200; i++) {
+                    var r = getRandomNumber(8, 20);
+                    var x = getRandomNumber(r + 3, canvas.width - r - 3);
+                    var y = getRandomNumber(r + 1, canvas.height - r + 1);
+                    var dy = getRandomNumber(4, 8);
+                    var color = fillStyleColors[Math.floor(Math.random() * fillStyleColors.length)];
+                    ballsArray.push(new Ball(x, y, r, dy, color));
+                }
+            }
+
+            function getRandomNumber(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function animateBalls() {
+                requestAnimationFrame(animateBalls);
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                for (var i = 0; i < ballsArray.length; i++) {
+                    ballsArray[i].update();
+                }
+            }
+
+            window.addEventListener("click", function () {
+                init();
+            });
+
+            window.addEventListener("resize", function () {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                init();
+            });
+
+            init();
+            animateBalls();
+        </script>
+    </body>
+</html>
